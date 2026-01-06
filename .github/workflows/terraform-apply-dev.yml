@@ -1,0 +1,97 @@
+name: Terraform Apply - DEV
+
+on:
+  workflow_dispatch:
+
+env:
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+
+jobs:
+
+  fmt:
+    name: Terraform FMT
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+      - run: terraform fmt -check -recursive
+
+  init:
+    name: Terraform INIT
+    runs-on: ubuntu-latest
+    needs: fmt
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+      - run: terraform init
+        working-directory: envs/dev
+
+  validate_security:
+    name: Validate & Security Scan
+    runs-on: ubuntu-latest
+    needs: init
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Validate
+        run: terraform validate
+        working-directory: envs/dev
+
+      - name: tfsec scan
+        uses: aquasecurity/tfsec-action@v1.0.3
+
+      - name: checkov scan
+        uses: bridgecrewio/checkov-action@v12
+
+  plan:
+    name: Terraform PLAN
+    runs-on: ubuntu-latest
+    needs: validate_security
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+
+      - run: terraform plan -out=tfplan
+        working-directory: envs/dev
+
+      - name: Upload plan artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dev-tfplan
+          path: envs/dev/tfplan
+
+  secret_scan:
+    name: Secret Scan
+    runs-on: ubuntu-latest
+    needs: plan
+    steps:
+      - uses: actions/checkout@v4
+      - name: Gitleaks Scan
+        uses: gitleaks/gitleaks-action@v2
+
+  approval:
+    name: Manual Approval
+    runs-on: ubuntu-latest
+    needs: secret_scan
+    environment: dev
+    steps:
+      - run: echo "Approved for DEV deployment"
+
+  apply:
+    name: Terraform APPLY
+    runs-on: ubuntu-latest
+    needs: approval
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: dev-tfplan
+          path: envs/dev
+
+      - run: terraform apply tfplan
+        working-directory: envs/dev

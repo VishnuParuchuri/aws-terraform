@@ -1,0 +1,98 @@
+name: Terraform Apply - PROD
+
+on:
+  workflow_dispatch:
+
+env:
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+
+jobs:
+
+  fmt:
+    name: Terraform FMT
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+      - run: terraform fmt -check -recursive
+
+  init:
+    name: Terraform INIT
+    runs-on: ubuntu-latest
+    needs: fmt
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+      - run: terraform init
+        working-directory: envs/prod
+
+  validate_security:
+    name: Validate & Infra Security Scan
+    runs-on: ubuntu-latest
+    needs: init
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Validate
+        run: terraform validate
+        working-directory: envs/prod
+
+      - name: tfsec scan
+        uses: aquasecurity/tfsec-action@v1.0.3
+
+      - name: checkov scan
+        uses: bridgecrewio/checkov-action@v12
+
+  plan:
+    name: Terraform PLAN
+    runs-on: ubuntu-latest
+    needs: validate_security
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+
+      - run: terraform plan -out=tfplan
+        working-directory: envs/prod
+
+      - name: Upload plan artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: prod-tfplan
+          path: envs/prod/tfplan
+
+  secret_scan:
+    name: Secret Scan (Credentials / Passwords)
+    runs-on: ubuntu-latest
+    needs: plan
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Gitleaks Scan
+        uses: gitleaks/gitleaks-action@v2
+
+  approval:
+    name: Manual Approval (PROD)
+    runs-on: ubuntu-latest
+    needs: secret_scan
+    environment: prod
+    steps:
+      - run: echo "Approved for PROD deployment"
+
+  apply:
+    name: Terraform APPLY
+    runs-on: ubuntu-latest
+    needs: approval
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: prod-tfplan
+          path: envs/prod
+
+      - run: terraform apply tfplan
+        working-directory: envs/prod

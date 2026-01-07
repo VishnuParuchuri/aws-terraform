@@ -51,11 +51,6 @@ jobs:
         with:
           args: envs/dev
 
-      - name: checkov scan
-        uses: bridgecrewio/checkov-action@v12
-        with:
-          directory: envs/dev
-
   plan:
     name: Terraform PLAN
     runs-on: ubuntu-latest

@@ -36,15 +36,15 @@ jobs:
     - uses: actions/checkout@v4
     - uses: hashicorp/setup-terraform@v3
 
-    - name: Terraform Init
+- name: Terraform Init
       run: terraform init
       working-directory: envs/dev
 
-    - name: Terraform Validate
+- name: Terraform Validate
       run: terraform validate
       working-directory: envs/dev
 
-    - name: tfsec scan
+- name: tfsec scan
   uses: aquasecurity/tfsec-action@v1.0.3
   with:
     working_directory: envs/dev

@@ -13,13 +13,13 @@ resource "aws_launch_template" "this" {
   }
 
   user_data = base64encode(<<-EOF
-              #!/bin/bash
-              yum update -y
-              yum install -y nginx
-              systemctl start nginx
-              systemctl enable nginx
-              echo "<h1>Welcome to Secure AWS App</h1>" > /usr/share/nginx/html/index.html
-              EOF
+    #!/bin/bash
+    yum update -y
+    yum install -y nginx
+    systemctl start nginx
+    systemctl enable nginx
+    echo "<h1>Hello from Secure AWS DevOps Project</h1>" > /usr/share/nginx/html/index.html
+  EOF
   )
 
   tag_specifications {

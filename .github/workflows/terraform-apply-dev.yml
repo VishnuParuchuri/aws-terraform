@@ -29,22 +29,26 @@ jobs:
         working-directory: envs/dev
 
   validate_security:
-    name: Validate & Security Scan
-    runs-on: ubuntu-latest
-    needs: init
-    steps:
-      - uses: actions/checkout@v4
-      - uses: hashicorp/setup-terraform@v3
+  name: Validate & Infra Security Scan
+  runs-on: ubuntu-latest
+  needs: init
+  steps:
+    - uses: actions/checkout@v4
+    - uses: hashicorp/setup-terraform@v3
 
-      - name: Terraform Validate
-        run: terraform validate
-        working-directory: envs/dev
+    - name: Terraform Init
+      run: terraform init
+      working-directory: envs/dev
 
-      - name: tfsec scan
-        uses: aquasecurity/tfsec-action@v1.0.3
+    - name: Terraform Validate
+      run: terraform validate
+      working-directory: envs/dev
 
-      - name: checkov scan
-        uses: bridgecrewio/checkov-action@v12
+    - name: tfsec scan
+      uses: aquasecurity/tfsec-action@v1.0.3
+
+    - name: checkov scan
+      uses: bridgecrewio/checkov-action@v12
 
   plan:
     name: Terraform PLAN

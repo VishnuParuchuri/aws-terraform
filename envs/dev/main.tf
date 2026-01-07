@@ -40,7 +40,7 @@ module "nat" {
 
   # Use FIRST public subnet for NAT Gateway
   public_subnet_id = module.subnets.public_subnet_ids[0]
-  tags              = var.tags
+  tags             = var.tags
 }
 
 module "private_route_table" {
@@ -77,11 +77,11 @@ module "iam" {
 module "launch_template" {
   source = "../../modules/launch-template"
 
-  ami_id                   = var.ami_id
-  instance_type            = var.instance_type
-  ec2_security_group_id    = module.security_groups.ec2_security_group_id
-  instance_profile_name    = module.iam.instance_profile_name
-  tags                     = var.tags
+  ami_id                = var.ami_id
+  instance_type         = var.instance_type
+  ec2_security_group_id = module.security_groups.ec2_security_group_id
+  instance_profile_name = module.iam.instance_profile_name
+  tags                  = var.tags
 }
 
 module "asg" {

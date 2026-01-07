@@ -32,12 +32,12 @@ module "vpc" {
 module "subnets" {
   source = "../../modules/subnets"
 
-  vpc_id                = module.vpc.vpc_id
-  public_subnet_cidrs   = var.public_subnet_cidrs
-  private_subnet_cidrs  = var.private_subnet_cidrs
-  availability_zones    = var.availability_zones
-  name_prefix           = local.name_prefix
-  tags                  = local.common_tags
+  vpc_id               = module.vpc.vpc_id
+  public_subnet_cidrs  = var.public_subnet_cidrs
+  private_subnet_cidrs = var.private_subnet_cidrs
+  availability_zones   = var.availability_zones
+  name_prefix          = local.name_prefix
+  tags                 = local.common_tags
 }
 
 module "igw" {

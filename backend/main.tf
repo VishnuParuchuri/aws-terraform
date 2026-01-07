@@ -18,8 +18,8 @@ resource "aws_s3_bucket" "terraform_state" {
   bucket = var.bucket_name
 
   tags = {
-    Name        = "terraform-state-bucket"
-    ManagedBy  = "Terraform"
+    Name      = "terraform-state-bucket"
+    ManagedBy = "Terraform"
   }
 }
 
@@ -57,7 +57,7 @@ resource "aws_dynamodb_table" "terraform_locks" {
   }
 
   tags = {
-    Name        = "terraform-lock-table"
-    ManagedBy  = "Terraform"
+    Name      = "terraform-lock-table"
+    ManagedBy = "Terraform"
   }
 }

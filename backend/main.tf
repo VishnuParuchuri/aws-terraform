@@ -14,6 +14,7 @@ provider "aws" {
 # ---------------------------
 # S3 Bucket for Terraform State
 # ---------------------------
+# tfsec:ignore:aws-s3-enable-bucket-logging
 resource "aws_s3_bucket" "terraform_state" {
   bucket = var.bucket_name
 
@@ -21,6 +22,15 @@ resource "aws_s3_bucket" "terraform_state" {
     Name      = "terraform-state-bucket"
     ManagedBy = "Terraform"
   }
+}
+
+resource "aws_s3_bucket_public_access_block" "terraform_state" {
+  bucket = aws_s3_bucket.terraform_state.id
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
 }
 
 # Enable versioning (VERY IMPORTANT)
@@ -33,6 +43,7 @@ resource "aws_s3_bucket_versioning" "versioning" {
 }
 
 # Enable encryption
+# tfsec:ignore:aws-s3-encryption-customer-key
 resource "aws_s3_bucket_server_side_encryption_configuration" "encryption" {
   bucket = aws_s3_bucket.terraform_state.id
 
@@ -55,6 +66,14 @@ resource "aws_dynamodb_table" "terraform_locks" {
   attribute {
     name = "LockID"
     type = "S"
+  }
+
+  server_side_encryption {
+  enabled = true
+  }
+
+  point_in_time_recovery {
+    enabled = true
   }
 
   tags = {

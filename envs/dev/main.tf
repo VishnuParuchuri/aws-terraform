@@ -1,5 +1,11 @@
-provider "aws" {
-  region = var.region
+data "aws_ami" "amazon_linux" {
+  most_recent = true
+  owners      = ["amazon"]
+
+  filter {
+    name   = "name"
+    values = ["amzn2-ami-hvm-*-x86_64-gp2"]
+  }
 }
 
 module "vpc" {
@@ -30,8 +36,8 @@ module "public_route_table" {
   source = "../../modules/route-tables"
 
   vpc_id            = module.vpc.vpc_id
-  igw_id            = module.igw.igw_id
   public_subnet_ids = module.subnets.public_subnet_ids
+  igw_id            = module.igw.igw_id
   tags              = var.tags
 }
 
@@ -47,8 +53,8 @@ module "private_route_table" {
   source = "../../modules/private-route-tables"
 
   vpc_id             = module.vpc.vpc_id
-  nat_gateway_id     = module.nat.nat_gateway_id
   private_subnet_ids = module.subnets.private_subnet_ids
+  nat_gateway_id     = module.nat.nat_gateway_id
   tags               = var.tags
 }
 
@@ -77,7 +83,7 @@ module "iam" {
 module "launch_template" {
   source = "../../modules/launch-template"
 
-  ami_id                = var.ami_id
+  ami_id                = data.aws_ami.amazon_linux.id
   instance_type         = var.instance_type
   ec2_security_group_id = module.security_groups.ec2_security_group_id
   instance_profile_name = module.iam.instance_profile_name

@@ -17,6 +17,7 @@ private_subnet_cidrs = [
 ]
 
 # Compute
+ami_id        = "ami-06f1fc9ae5ae7f31e"
 instance_type = "t3.medium"
 
 min_size         = 2
@@ -26,6 +27,6 @@ desired_capacity = 2
 # Tags
 tags = {
   Environment = "prod"
-  Project     = "aws-terraform"
+  Project     = "secure-aws-terraform"
   Owner       = "Vishnu"
 }

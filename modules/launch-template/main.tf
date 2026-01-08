@@ -33,9 +33,7 @@ resource "aws_launch_template" "this" {
   )
 
   tag_specifications {
-    resource_type = "instance"
-    tags = {
-      Name = "secure-aws-ec2"
-    }
-  }
+  resource_type = "instance"
+  tags          = var.tags
+}
 }

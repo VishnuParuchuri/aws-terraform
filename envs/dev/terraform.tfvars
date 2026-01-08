@@ -1,9 +1,9 @@
 vpc_cidr = "10.0.0.0/16"
 
 tags = {
-  Project     = "secure-aws-terraform"
   Environment = "dev"
-  Owner       = "DevOps"
+  Project     = "secure-aws-terraform"
+  Owner       = "Vishnu"
 }
 
 availability_zones = [

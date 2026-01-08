@@ -37,3 +37,8 @@ variable "tags" {
   description = "Common resource tags"
   type        = map(string)
 }
+
+variable "ami_id" {
+  description = "AMI ID for EC2 instances"
+  type        = string
+}

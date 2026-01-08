@@ -2,27 +2,18 @@
 # IAM Role for EC2
 # -------------------------
 resource "aws_iam_role" "ec2_role" {
-  name = "secure-aws-ec2-role"
+  name = "secure-aws-ec2-role-${var.environment}"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow"
-        Principal = {
-          Service = "ec2.amazonaws.com"
-        }
-        Action = "sts:AssumeRole"
-      }
-    ]
+    Statement = [{
+      Effect    = "Allow"
+      Principal = { Service = "ec2.amazonaws.com" }
+      Action    = "sts:AssumeRole"
+    }]
   })
 
-  tags = merge(
-    var.tags,
-    {
-      Name = "secure-aws-ec2-role"
-    }
-  )
+  tags = var.tags
 }
 
 # -------------------------

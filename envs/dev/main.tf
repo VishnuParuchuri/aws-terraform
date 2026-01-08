@@ -83,11 +83,12 @@ module "iam" {
 module "launch_template" {
   source = "../../modules/launch-template"
 
-  ami_id                = data.aws_ami.amazon_linux.id
+  ami_id                = var.ami_id
   instance_type         = var.instance_type
-  ec2_security_group_id = module.security_groups.ec2_security_group_id
+  ec2_security_group_id = module.security_groups.ec2_sg_id
   instance_profile_name = module.iam.instance_profile_name
-  tags                  = var.tags
+
+  environment = "dev"
 }
 
 module "asg" {

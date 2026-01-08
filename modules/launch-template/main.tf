@@ -26,7 +26,7 @@ resource "aws_launch_template" "this" {
     systemctl start nginx
     systemctl enable nginx
 
-    echo "<h1>Secure AWS Terraform – NGINX Working</h1>" > /usr/share/nginx/html/index.html
+    echo "<h1>Secure AWS Terraform – NGINX Working${var.environment == "prod" ? " In PROD" : ""}</h1>" > /usr/share/nginx/html/index.html
 
     echo "==== User data completed successfully ===="
   EOF

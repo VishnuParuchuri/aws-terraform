@@ -33,7 +33,7 @@ resource "aws_launch_template" "this" {
   )
 
   tag_specifications {
-  resource_type = "instance"
-  tags          = var.tags
-}
+    resource_type = "instance"
+    tags          = var.tags
+  }
 }

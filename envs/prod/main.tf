@@ -81,8 +81,8 @@ module "iam" {
 module "launch_template" {
   source = "../../modules/launch-template"
 
-  ami_id               = var.ami_id
-  instance_type        = var.instance_type
+  ami_id                = var.ami_id
+  instance_type         = var.instance_type
   ec2_security_group_id = module.security_groups.ec2_sg_id
   instance_profile_name = module.iam.instance_profile_name
   environment           = "prod"

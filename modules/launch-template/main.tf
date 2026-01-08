@@ -32,7 +32,7 @@ echo "<h1>Secure AWS Terraform – NGINX Working ${var.environment == "prod" ? "
 
 echo "==== User data completed successfully ===="
 EOF
-)
+  )
 
   tag_specifications {
     resource_type = "instance"

@@ -12,25 +12,27 @@ resource "aws_launch_template" "this" {
   ]
 
   user_data = base64encode(<<-EOF
-    #!/bin/bash
-    set -eux
+#!/bin/bash
+set -euxo pipefail
 
-    exec > >(tee /var/log/user-data.log | logger -t user-data -s 2>/dev/console) 2>&1
+exec > >(tee /var/log/user-data.log | logger -t user-data -s 2>/dev/console) 2>&1
 
-    echo "==== User data started ===="
+echo "==== User data started ===="
 
-    yum update -y
-    amazon-linux-extras enable nginx1
-    yum install -y nginx
+yum clean all
+yum update -y
 
-    systemctl start nginx
-    systemctl enable nginx
+# Install nginx directly (amazon-linux-extras removed in new AL2)
+yum install -y nginx
 
-    echo "<h1>Secure AWS Terraform – NGINX Working${var.environment == "prod" ? " In PROD" : ""}</h1>" > /usr/share/nginx/html/index.html
+systemctl enable nginx
+systemctl start nginx
 
-    echo "==== User data completed successfully ===="
-  EOF
-  )
+echo "<h1>Secure AWS Terraform – NGINX Working ${var.environment == "prod" ? "In PROD" : ""}</h1>" > /usr/share/nginx/html/index.html
+
+echo "==== User data completed successfully ===="
+EOF
+)
 
   tag_specifications {
     resource_type = "instance"

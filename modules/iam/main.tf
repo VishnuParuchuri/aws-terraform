@@ -45,6 +45,6 @@ resource "aws_iam_role_policy_attachment" "cloudwatch" {
 # Instance Profile
 # -------------------------
 resource "aws_iam_instance_profile" "ec2_profile" {
-  name = "secure-aws-ec2-profile"
+  name = "secure-aws-ec2-profile-${var.environment}"
   role = aws_iam_role.ec2_role.name
 }

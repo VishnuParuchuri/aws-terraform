@@ -75,9 +75,9 @@ module "alb" {
 }
 
 module "iam" {
-  source = "../../modules/iam"
-
-  tags = var.tags
+  source      = "../../modules/iam"
+  environment = "dev"
+  tags        = var.tags
 }
 
 module "launch_template" {
